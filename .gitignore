@@ -1,0 +1,12 @@
+# Pythonキャッシュ系
+__pycache__/
+*.pyc
+.DS_Store
+
+# 仮想環境
+venv/
+
+# 重いファイルやLFS対象
+data/raw/
+data/processed/
+embeddings/
