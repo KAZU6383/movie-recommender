@@ -27,10 +27,9 @@ model = load_model()
 # ===== 埋め込み & データの読み込み =====
 @st.cache_data(show_spinner="🔄 映画データを読み込み中…")
 def load_processed_data():
-    #base_path = Path(__file__).resolve().parent.parent / "embeddings"
     project_root = Path(__file__).resolve().parent.parent
-    df = pd.read_csv(project_root / "embeddings" / "processed_reviews.csv")
-    embeddings = torch.load(project_root / "embeddings" / "review_embeddings.pt")
+    df = pd.read_csv(project_root / "data" / "processed" / "sample_data.csv")
+    embeddings = torch.load(project_root / "embeddings" / "sample_embeddings.pt")
     return df, embeddings
 
 df, review_embeddings = load_processed_data()
