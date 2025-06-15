@@ -27,9 +27,10 @@ model = load_model()
 # ===== 埋め込み & データの読み込み =====
 @st.cache_data(show_spinner="🔄 映画データを読み込み中…")
 def load_processed_data():
-    base_path = Path(__file__).resolve().parent.parent / "embeddings"
-    df = pd.read_csv(base_path / "processed_reviews.csv")
-    embeddings = torch.load(base_path / "review_embeddings.pt")
+    #base_path = Path(__file__).resolve().parent.parent / "embeddings"
+    project_root = Path(__file__).resolve().parent.parent
+    df = pd.read_csv(project_root / "embeddings" / "processed_reviews.csv")
+    embeddings = torch.load(project_root / "embeddings" / "review_embeddings.pt")
     return df, embeddings
 
 df, review_embeddings = load_processed_data()
@@ -65,6 +66,8 @@ mood_keyword_map = {
 
 selected_mood = st.selectbox("🎭 なりたい気分を選んでください", mood_options)
 
+display_mode = st.radio("📊 表示方法を選んでください", ["スコア順に表示", "ランダムに表示"])
+top_k = st.slider("🔢 表示する件数", min_value=1, max_value=20, value=5)
 
 if selected_mood != "--- 気分を選んでください ---":
     query_clean = clean_text(mood_keyword_map[selected_mood])
@@ -78,7 +81,12 @@ if selected_mood != "--- 気分を選んでください ---":
 
         # カスタムスコアでランキング
         df["score"] = 0.7 * df["similarity"] + 0.3 * (df["rating"] / 5)
-        top_results = df.sort_values("score", ascending=False).head(10)
+
+        # ランダム or スコア順
+        if display_mode == "スコア順に表示":
+            top_results = df.sort_values("score", ascending=False).head(top_k)
+        else:
+            top_results = df.sample(top_k)
 
     # 2. ===== 表示 ===== セクションの中でポスター画像も表示
     for _, row in top_results.iterrows():
